@@ -1,0 +1,9 @@
+# Files
+.env
+.prettierrc
+.prettierignore
+
+# Folders
+.vscode/
+node_modules/
+dist/
