@@ -5,16 +5,16 @@ import { useEffect, useRef } from "react";
 
 type BlockProps = {
   block: TBlock;
-  onChange?: (id: string, text: string) => void;
-  className?: string;
 
+  className?: string;
+  onChange?: (id: string, text: string) => void;
   register?: (id: string, el: HTMLElement) => void;
   selected?: boolean;
 };
-
 function Block({ block, onChange, className, register, selected }: BlockProps) {
   const ref = useRef<HTMLDivElement>(null);
 
+  // Register this block's DOM element for marquee selection
   useEffect(() => {
     if (ref.current) {
       register?.(block.id, ref.current);
@@ -23,10 +23,10 @@ function Block({ block, onChange, className, register, selected }: BlockProps) {
 
   return (
     <div
-      ref={ref}
+      ref={ref} // element ref for selection registry
       className={cn(
         "flex m-0.5 gap-0.5 items-center group",
-        selected && "bg-blue-500/20",
+        selected && "bg-blue-500/20", // highlight if selected
         className
       )}
     >
@@ -36,6 +36,7 @@ function Block({ block, onChange, className, register, selected }: BlockProps) {
       <div
         contentEditable
         suppressContentEditableWarning
+        // Update block content in state on input
         onInput={(e) => onChange?.(block.id, e.currentTarget.innerText)}
         className="w-full"
       />
