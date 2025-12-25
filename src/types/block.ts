@@ -7,7 +7,7 @@ export type BlockProps = {
   textColor?: TextColor;
 };
 
-export type Block = {
+export type TBlock = {
   id: string;
   type: BlockType;
   props?: BlockProps;
