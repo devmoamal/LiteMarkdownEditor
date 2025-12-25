@@ -1,3 +1,5 @@
+import "@/assets/editor.css";
+
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { TBlock } from "@/types";
@@ -51,7 +53,7 @@ function Editor({ className }: EditorProps) {
     <div
       ref={containerRef} // container ref for marquee
       className={cn(
-        "relative h-screen p-2 rounded-sm text-text bg-editor-background select-none",
+        "relative h-screen p-2 justify-center rounded-sm text-text bg-editor-background select-none",
         className
       )}
       onMouseDown={onMouseDown}
