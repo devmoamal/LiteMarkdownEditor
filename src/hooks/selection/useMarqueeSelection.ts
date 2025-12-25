@@ -34,8 +34,7 @@ export function useMarqueeSelection(
   };
 
   const onMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
-    if (!containerRef.current) return;
+    if (e.button !== 0 || !containerRef.current) return;
 
     const bounds = containerRef.current.getBoundingClientRect();
     drag.current = {
@@ -58,7 +57,6 @@ export function useMarqueeSelection(
     const dx = Math.abs(drag.current.x - drag.current.startX);
     const dy = Math.abs(drag.current.y - drag.current.startY);
 
-    // Activate marquee only after threshold
     if (!drag.current.active) {
       if (dx < DRAG_THRESHOLD && dy < DRAG_THRESHOLD) return;
       drag.current.active = true;
@@ -82,7 +80,6 @@ export function useMarqueeSelection(
   const onMouseUp = (e: MouseEvent | React.MouseEvent) => {
     if (!drag.current.armed) return;
 
-    // Click without drag → deselect if clicked on container
     if (!drag.current.active) {
       if (containerRef.current && e.target === containerRef.current) {
         setSelected(new Set());
@@ -111,6 +108,7 @@ export function useMarqueeSelection(
         bottom: box.bottom - containerBounds.top,
       };
 
+      // Check if marquee rect intersects with element bounds
       const intersects = !(
         rect.right < b.left ||
         rect.left > b.right ||
@@ -129,11 +127,9 @@ export function useMarqueeSelection(
     if (drag.current.armed) cancelSelection();
   };
 
-  // Global mouseup (outside editor)
   useEffect(() => {
     const handleWindowMouseUp = (e: MouseEvent) => {
-      if (!drag.current.armed) return;
-      onMouseUp(e);
+      if (drag.current.armed) onMouseUp(e);
     };
     window.addEventListener("mouseup", handleWindowMouseUp);
     return () => window.removeEventListener("mouseup", handleWindowMouseUp);
