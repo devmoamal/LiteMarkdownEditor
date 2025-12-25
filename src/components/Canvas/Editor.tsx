@@ -17,14 +17,17 @@ function Editor({ className }: EditorProps) {
   const registryRef = useRef<Map<string, HTMLElement>>(new Map());
 
   const onChangeBlock = (id: string, text: string) => {
+    // Add new empty block if last block receives input
     if (text.length > 0 && blocks[blocks.length - 1].id === id) {
       setBlocks([...blocks, generateEmptyBlock()]);
     }
   };
 
+  // Marquee selection hook: rect, selected ids, mouse handlers
   const { rect, selected, onMouseDown, onMouseMove, onMouseUp, onMouseLeave } =
     useMarqueeSelection(containerRef, registryRef);
 
+  // Keyboard deletion of selected blocks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (selected.size === 0) return;
@@ -38,17 +41,15 @@ function Editor({ className }: EditorProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selected]);
 
+  // Ensure editor always has at least one block
   useEffect(() => {
-    // Check if there is no block generate empty block
-    if (blocks.length == 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBlocks([generateEmptyBlock()]);
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (blocks.length === 0) setBlocks([generateEmptyBlock()]);
   }, [blocks]);
 
   return (
     <div
-      ref={containerRef}
+      ref={containerRef} // container ref for marquee
       className={cn(
         "relative h-screen p-2 rounded-sm text-text bg-editor-background select-none",
         className
@@ -63,11 +64,11 @@ function Editor({ className }: EditorProps) {
           key={block.id}
           block={block}
           onChange={onChangeBlock}
-          register={(id, el) => registryRef.current.set(id, el)}
+          register={(id, el) => registryRef.current.set(id, el)} // register block for selection
           selected={selected.has(block.id)}
         />
       ))}
-      {rect && <SelectionBox rect={rect} />}
+      {rect && <SelectionBox rect={rect} />} {/* render marquee rectangle */}
     </div>
   );
 }
