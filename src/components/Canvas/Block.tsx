@@ -36,9 +36,9 @@ function Block({ block, onChange, className, register, selected }: BlockProps) {
       <div
         contentEditable
         suppressContentEditableWarning
-        // Update block content in state on input
+        data-placeholder="Type something..."
         onInput={(e) => onChange?.(block.id, e.currentTarget.innerText)}
-        className="w-full"
+        className="block outline-none"
       />
     </div>
   );
