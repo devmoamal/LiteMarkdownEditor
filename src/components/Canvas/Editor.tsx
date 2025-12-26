@@ -1,28 +1,27 @@
 import "@/assets/editor.css";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import type { TBlock } from "@/types";
 import Block from "./Block";
-import { generateEmptyBlock } from "@/factories";
 import { useMarqueeSelection } from "@/hooks/selection/useMarqueeSelection";
 import { SelectionBox } from "@/components/Canvas/SelectionBox";
+import useEditor from "@/hooks/useEditor";
+import type { BlockId } from "@/types";
 
 type EditorProps = {
   className?: string;
 };
 
 function Editor({ className }: EditorProps) {
-  const [blocks, setBlocks] = useState<TBlock[]>([generateEmptyBlock()]);
+  const { blocks, deleteSelected, addEmptyToLast } = useEditor();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const registryRef = useRef<Map<string, HTMLElement>>(new Map());
+  const registryRef = useRef<Map<BlockId, HTMLElement>>(new Map());
 
   const onChangeBlock = (id: string, text: string) => {
     // Add new empty block if last block receives input
-    if (text.length > 0 && blocks[blocks.length - 1].id === id) {
-      setBlocks([...blocks, generateEmptyBlock()]);
-    }
+    if (text.length > 0 && blocks[blocks.length - 1].id === id)
+      addEmptyToLast();
   };
 
   // Marquee selection hook: rect, selected ids, mouse handlers
@@ -35,19 +34,18 @@ function Editor({ className }: EditorProps) {
       if (selected.size === 0) return;
       if (e.key === "Backspace" || e.key === "Delete") {
         e.preventDefault();
-        setBlocks((prev) => prev.filter((block) => !selected.has(block.id)));
+        deleteSelected(selected);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selected]);
+  }, [deleteSelected, selected]);
 
   // Ensure editor always has at least one block
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (blocks.length === 0) setBlocks([generateEmptyBlock()]);
-  }, [blocks]);
+    if (blocks.length === 0) addEmptyToLast();
+  }, [addEmptyToLast, blocks]);
 
   return (
     <div
