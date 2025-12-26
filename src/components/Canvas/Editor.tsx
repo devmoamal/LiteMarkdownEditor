@@ -6,22 +6,22 @@ import Block from "./Block";
 import { useMarqueeSelection } from "@/hooks/selection/useMarqueeSelection";
 import { SelectionBox } from "@/components/Canvas/SelectionBox";
 import useEditor from "@/hooks/useEditor";
-import type { BlockId } from "@/types";
+import type { BlockId, TBlock } from "@/types";
+import Title from "./Title";
 
 type EditorProps = {
   className?: string;
 };
 
 function Editor({ className }: EditorProps) {
-  const { blocks, deleteSelected, addEmptyToLast } = useEditor();
+  const { blocks, deleteSelected, addEmptyToLast, setBlock } = useEditor();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const registryRef = useRef<Map<BlockId, HTMLElement>>(new Map());
 
-  const onChangeBlock = (id: string, text: string) => {
-    // Add new empty block if last block receives input
-    if (text.length > 0 && blocks[blocks.length - 1].id === id)
-      addEmptyToLast();
+  const onChangeBlock = (block: TBlock) => {
+    console.log(block);
+    setBlock(block);
   };
 
   // Marquee selection hook: rect, selected ids, mouse handlers
@@ -51,7 +51,7 @@ function Editor({ className }: EditorProps) {
     <div
       ref={containerRef} // container ref for marquee
       className={cn(
-        "relative h-screen p-2 justify-center rounded-sm text-text bg-editor-background select-none",
+        "relative flex flex-col h-full pt-[20%] px-[20%] text-text bg-editor-background select-none",
         className
       )}
       onMouseDown={onMouseDown}
@@ -59,13 +59,14 @@ function Editor({ className }: EditorProps) {
       onMouseUp={onMouseUp}
       onMouseLeave={onMouseLeave}
     >
+      <Title />
       {blocks.map((block) => (
         <Block
           key={block.id}
           block={block}
           onChange={onChangeBlock}
           register={(id, el) => registryRef.current.set(id, el)} // register block for selection
-          selected={selected.has(block.id)}
+          isSelected={selected.has(block.id)}
         />
       ))}
       {rect && <SelectionBox rect={rect} />} {/* render marquee rectangle */}
