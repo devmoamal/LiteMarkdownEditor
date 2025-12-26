@@ -1,5 +1,8 @@
+"use server";
+
+import useEditor from "@/hooks/useEditor";
 import { cn } from "@/lib/utils";
-import type { TBlock } from "@/types";
+import type { BlockId, TBlock } from "@/types";
 import { GripVertical, Plus } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -8,10 +11,12 @@ type BlockProps = {
 
   className?: string;
   onChange?: (id: string, text: string) => void;
-  register?: (id: string, el: HTMLElement) => void;
+  register?: (id: BlockId, el: HTMLElement) => void;
   selected?: boolean;
 };
 function Block({ block, onChange, className, register, selected }: BlockProps) {
+  const { addAfter } = useEditor();
+
   const ref = useRef<HTMLDivElement>(null);
 
   // Register this block's DOM element for marquee selection
@@ -30,7 +35,14 @@ function Block({ block, onChange, className, register, selected }: BlockProps) {
         className
       )}
     >
-      <Plus size={20} className="invisible group-hover:visible" />
+      <Plus
+        size={20}
+        className="invisible group-hover:visible"
+        onClick={() => {
+          console.log("Hi");
+          addAfter(block.id);
+        }}
+      />
       <GripVertical size={20} className="invisible group-hover:visible" />
 
       <div
