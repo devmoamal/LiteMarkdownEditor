@@ -1,5 +1,3 @@
-"use server";
-
 import useEditor from "@/hooks/useEditor";
 import { cn } from "@/lib/utils";
 import type { BlockId, TBlock } from "@/types";
@@ -8,18 +6,23 @@ import { useEffect, useRef } from "react";
 
 type BlockProps = {
   block: TBlock;
-
   className?: string;
-  onChange?: (id: string, text: string) => void;
+  onChange?: (block: TBlock) => void;
   register?: (id: BlockId, el: HTMLElement) => void;
-  selected?: boolean;
+  isSelected?: boolean;
 };
-function Block({ block, onChange, className, register, selected }: BlockProps) {
-  const { addAfter } = useEditor();
 
+function Block({
+  block,
+  onChange,
+  className,
+  register,
+  isSelected,
+}: BlockProps) {
+  const { addAfter } = useEditor();
   const ref = useRef<HTMLDivElement>(null);
 
-  // Register this block's DOM element for marquee selection
+  // Register DOM element for marquee / selection logic
   useEffect(() => {
     if (ref.current) {
       register?.(block.id, ref.current);
@@ -28,30 +31,47 @@ function Block({ block, onChange, className, register, selected }: BlockProps) {
 
   return (
     <div
-      ref={ref} // element ref for selection registry
+      ref={ref}
       className={cn(
-        "flex m-0.5 gap-0.5 items-center group",
-        selected && "bg-blue-500/20", // highlight if selected
+        "relative group my-0.5",
+        isSelected && "bg-blue-500/20",
         className
       )}
     >
-      <Plus
-        size={20}
-        className="invisible group-hover:visible"
-        onClick={() => {
-          console.log("Hi");
-          addAfter(block.id);
-        }}
-      />
-      <GripVertical size={20} className="invisible group-hover:visible" />
+      {/* LEFT CONTROLS (outside content flow) */}
+      <div
+        className="
+          absolute -left-10 top-1/2 -translate-y-1/2
+          flex gap-1
+          opacity-0 group-hover:opacity-100
+          transition-opacity
+        "
+      >
+        <Plus
+          size={18}
+          className="cursor-pointer text-muted-foreground hover:text-foreground"
+          onClick={() => addAfter(block.id)}
+        />
+        <GripVertical
+          size={18}
+          className="cursor-grab text-muted-foreground hover:text-foreground"
+        />
+      </div>
 
       <div
         contentEditable
         suppressContentEditableWarning
         data-placeholder="Type something..."
-        onInput={(e) => onChange?.(block.id, e.currentTarget.innerText)}
-        className="block outline-none"
+        onInput={(e) =>
+          onChange?.({ ...block, content: e.currentTarget.innerText })
+        }
+        className="
+          block
+          outline-none
+          w-2/3
+        "
       />
+      {block.content}
     </div>
   );
 }
