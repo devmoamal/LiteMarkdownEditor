@@ -54,7 +54,7 @@ function Editor({ className }: EditorProps) {
     <div
       ref={containerRef} // container ref for marquee
       className={cn(
-        "relative flex flex-col h-full pt-[20%] px-[20%] text-text bg-editor-background select-none",
+        "relative flex flex-col flex-1 pt-[7.5%] pb-[2.5%] px-[10%] sm:px-[12.5%] lg:px-[15%] text-text bg-editor-background select-none overflow-x-hidden",
         className
       )}
       onMouseDown={onMouseDown}
@@ -63,6 +63,7 @@ function Editor({ className }: EditorProps) {
       onMouseLeave={onMouseLeave}
     >
       <Title />
+      <hr className="my-2 text-text-hint" />
       {blocks.map((block) => (
         <Block
           key={block.id}
