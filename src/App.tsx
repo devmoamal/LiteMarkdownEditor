@@ -1,11 +1,9 @@
-import Editor from "@/components/Canvas/Editor";
+import Layout from "@/components/_Layout";
 
 function App() {
   return (
-    <div>
-      <div className="p-2 h-screen">
-        <Editor />
-      </div>
+    <div className="flex flex-col h-screen">
+      <Layout />
     </div>
   );
 }
