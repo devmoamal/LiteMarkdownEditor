@@ -20,8 +20,11 @@ function Editor({ className }: EditorProps) {
   const registryRef = useRef<Map<BlockId, HTMLElement>>(new Map());
 
   const onChangeBlock = (block: TBlock) => {
-    console.log(block);
     setBlock(block);
+
+    // Check if the last block not empty to create new block
+    if (block.content.length > 0 && blocks[blocks.length - 1].id == block.id)
+      addEmptyToLast();
   };
 
   // Marquee selection hook: rect, selected ids, mouse handlers
