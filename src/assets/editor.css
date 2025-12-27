@@ -1,5 +1,5 @@
 .group:hover .block:empty::before {
   content: attr(data-placeholder);
-  color: #9ca3af; /* gray-400 */
+  color: var(--text-hint); /* gray-400 */
   pointer-events: none;
 }
