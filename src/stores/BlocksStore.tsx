@@ -53,7 +53,7 @@ const useBlocksStore = create<useBlocksStoreState>()(
   persist(
     (set) => ({
       title: "",
-      blocks: [generateEmptyBlock()],
+      blocks: [generateEmptyBlock()], // Start with empty array to let persist handle initial state
 
       // Block Actions
       addAfter: (id) =>
@@ -71,12 +71,14 @@ const useBlocksStore = create<useBlocksStoreState>()(
       setTitle: (title) => set(() => ({ title: title })),
       setBlock: (block) =>
         set((state) => ({
-          blocks: state.blocks.filter((_block) =>
+          blocks: state.blocks.map((_block) =>
             _block.id === block.id ? block : _block
           ),
         })),
     }),
-    { name: "text-editor" }
+    {
+      name: "text-editor",
+    }
   )
 );
 
