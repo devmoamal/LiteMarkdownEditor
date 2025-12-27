@@ -2,7 +2,7 @@ import useEditor from "@/hooks/useEditor";
 import { cn } from "@/lib/utils";
 import type { BlockId, TBlock } from "@/types";
 import { GripVertical, Plus } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type BlockProps = {
   block: TBlock;
@@ -21,6 +21,13 @@ function Block({
 }: BlockProps) {
   const { addAfter } = useEditor();
   const ref = useRef<HTMLDivElement>(null);
+
+  const [content, setContent] = useState("");
+
+  // On Mounted
+  useEffect(() => {
+    setContent(block.content);
+  }, []);
 
   // Register DOM element for marquee / selection logic
   useEffect(() => {
@@ -70,8 +77,9 @@ function Block({
           outline-none
           w-2/3
         "
-      />
-      {block.content}
+      >
+        {content}
+      </div>
     </div>
   );
 }
