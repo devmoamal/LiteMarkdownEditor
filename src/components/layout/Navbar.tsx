@@ -25,7 +25,7 @@ function Navbar({ className }: NavbarProps) {
         className
       )}
     >
-      <div className="flex items-center gap-1 min-w-0 flex-1 max-w-[200px] md:max-w-[400px]">
+      <div className="flex items-center gap-1 min-w-0 flex-1">
         <img
           className="w-6 h-6 hover:opacity-60 cursor-pointer"
           src={logo}
