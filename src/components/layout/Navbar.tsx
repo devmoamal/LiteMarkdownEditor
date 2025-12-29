@@ -1,7 +1,7 @@
 import useEditor from "@/hooks/useEditor";
 import { cn } from "@/lib/utils";
 import { Ellipsis, Moon, Sun } from "lucide-react";
-import IconButton from "./common/IconButton";
+import IconButton from "../common/IconButton";
 import useTheme from "@/hooks/useTheme";
 
 type NavbarProps = {

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import Editor from "./Canvas/Editor";
+import Editor from "../Canvas/Editor";
 import Navbar from "./Navbar";
 import useTheme from "@/hooks/useTheme";
 import { useEffect } from "react";
