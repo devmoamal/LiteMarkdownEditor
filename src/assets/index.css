@@ -4,48 +4,71 @@
 
 *:focus {
   outline: none;
-  user-select: none;
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.98 0.01 240);
+  --foreground: oklch(0.25 0.02 240);
 
-  --button-hover: oklch(81.406% 0.00009 271.152 / 0.322);
+  --button-hover: oklch(0.9 0.02 240 / 0.1);
 
-  --text: oklch(0.145 0 0);
-  --text-hint: oklch(82.344% 0.00009 271.152 / 0.836);
+  --text: oklch(0.2 0.02 240);
+  --text-hint: oklch(0.6 0.02 240);
   --foretext: oklch(1 0 0);
 
-  --editor-background: oklch(96.346% 0.00319 15.323);
+  --editor-background: oklch(0.98 0.01 240);
+  --selection: oklch(0.9 0.05 240 / 0.3);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(1 0 0);
+  --background: oklch(0.15 0.02 240);
+  --foreground: oklch(0.95 0.01 240);
 
-  --button-hover: oklch(48.55% 0.00006 271.152 / 0.342);
+  --button-hover: oklch(1 0.01 240 / 0.08);
 
-  --text: oklch(1 0 0);
-  --text-hint: oklch(82.344% 0.00009 271.152 / 0.836);
-  --foretext: oklch(0.145 0 0);
+  --text: oklch(0.95 0.01 240);
+  --text-hint: oklch(0.6 0.02 240);
+  --foretext: oklch(0.1 0 0);
 
-  --editor-background: oklch(28.606% 0.00145 16.005);
+  --editor-background: oklch(0.12 0.02 240);
+  --selection: oklch(0.4 0.1 240 / 0.3);
 }
 
 body {
   background-color: var(--editor-background);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
   --color-button-hover: var(--button-hover);
-
   --color-text: var(--text);
   --color-text-hint: var(--text-hint);
   --color-foretext: var(--foretext);
-
   --color-editor-background: var(--editor-background);
+}
+
+::selection {
+  background-color: var(--selection);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--button-hover);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-hint);
 }
