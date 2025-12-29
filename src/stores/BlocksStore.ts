@@ -1,5 +1,5 @@
 import { generateEmptyBlock } from "@/factories";
-import type { BlockId, TBlock } from "@/types";
+import type { BlockId, BlockProps, TBlock } from "@/types";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -13,10 +13,14 @@ interface BlocksState {
   addEmptyToLast: () => void;
   deleteSelected: (selected: Set<BlockId>) => void;
   setTitle: (title: string) => void;
-  setBlock: (block: TBlock) => void;
+  setBlock: (block: TBlock, props?: BlockProps) => void;
   setFocusedBlockId: (id: BlockId | null) => void;
 }
 
+/**
+ * Main store for managing blocks and document state.
+ * Uses zustand with persistence to local storage.
+ */
 const useBlocksStore = create<BlocksState>()(
   persist(
     (set) => ({
@@ -24,6 +28,9 @@ const useBlocksStore = create<BlocksState>()(
       blocks: [generateEmptyBlock()],
       focusedBlockId: null,
 
+      /**
+       * Adds a new empty block immediately after the specified block ID.
+       */
       addAfter: (id) =>
         set((state) => {
           const index = state.blocks.findIndex((b) => b.id === id);
@@ -38,6 +45,9 @@ const useBlocksStore = create<BlocksState>()(
           return { blocks: newBlocks, focusedBlockId: newBlock.id };
         }),
 
+      /**
+       * Appends an empty block to the end of the document.
+       */
       addEmptyToLast: () =>
         set((state) => {
           const newBlock = generateEmptyBlock();
@@ -47,6 +57,10 @@ const useBlocksStore = create<BlocksState>()(
           };
         }),
 
+      /**
+       * Deletes all blocks in the provided set of IDs.
+       * Ensures at least one empty block remains in the document.
+       */
       deleteSelected: (selected) =>
         set((state) => {
           if (selected.size === 0) return state;
@@ -59,14 +73,13 @@ const useBlocksStore = create<BlocksState>()(
             (block) => !selected.has(block.id)
           );
 
-          // Always keep at least one block
+          // Always keep at least one block to maintain document structure
           if (newBlocks.length === 0) {
             const newBlock = generateEmptyBlock();
             return { blocks: [newBlock], focusedBlockId: newBlock.id };
           }
 
-          // Find block to focus: prioritize the one that moved into the deleted block's index
-          // If we deleted the last block, focus the new last block
+          // Smart focus logic: prioritize the block that shifted into the deleted position
           let focusId: BlockId | null = null;
           if (firstSelectedIndex !== -1) {
             const targetIndex = Math.min(
@@ -79,20 +92,33 @@ const useBlocksStore = create<BlocksState>()(
           return { blocks: newBlocks, focusedBlockId: focusId };
         }),
 
+      /**
+       * Updates the document title.
+       */
       setTitle: (title) => set({ title }),
 
-      setBlock: (updatedBlock) =>
+      /**
+       * Updates a specific block's content and/or properties.
+       * Preserves existing props if new ones are not provided.
+       */
+      setBlock: (updatedBlock, props) =>
         set((state) => ({
           blocks: state.blocks.map((block) =>
-            block.id === updatedBlock.id ? updatedBlock : block
+            block.id === updatedBlock.id
+              ? { ...updatedBlock, props: props ?? updatedBlock.props }
+              : block
           ),
         })),
 
+      /**
+       * Sets the ID of the block that should receive focus.
+       */
       setFocusedBlockId: (id) => set({ focusedBlockId: id }),
     }),
     {
       name: "lite-markdown-editor-storage",
       storage: createJSONStorage(() => localStorage),
+      // Only persist essential document data
       partialize: (state) => ({
         title: state.title,
         blocks: state.blocks,
