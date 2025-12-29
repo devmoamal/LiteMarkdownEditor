@@ -1,5 +1,3 @@
-import "@/assets/editor.css";
-
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import Block from "./Block";
@@ -8,6 +6,7 @@ import { SelectionBox } from "@/components/Canvas/SelectionBox";
 import useEditor from "@/hooks/useEditor";
 import type { TBlock, BlockId } from "@/types";
 import Title from "./Title";
+import { useBlockRegistry } from "@/hooks/selection/useBlockRegistry";
 
 type EditorProps = {
   className?: string;
@@ -15,16 +14,12 @@ type EditorProps = {
 
 function Editor({ className }: EditorProps) {
   const { blocks, deleteSelected, addEmptyToLast, setBlock } = useEditor();
+  const { registry, register, unregister } = useBlockRegistry();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const registryRef = useRef<Map<string, HTMLElement>>(new Map());
-
-  const onChangeBlock = (block: TBlock) => {
-    setBlock(block);
-  };
 
   const { rect, selected, onMouseDown, onMouseMove, onMouseUp, onMouseLeave } =
-    useMarqueeSelection(containerRef, registryRef);
+    useMarqueeSelection(containerRef, registry);
 
   // Keyboard deletion of selected blocks
   useEffect(() => {
@@ -68,8 +63,9 @@ function Editor({ className }: EditorProps) {
             <Block
               key={block.id}
               block={block}
-              onChange={onChangeBlock}
-              register={(id, el) => registryRef.current.set(id, el)}
+              onChange={(updated: TBlock) => setBlock(updated)}
+              register={register}
+              unregister={unregister}
               isSelected={selected.has(block.id)}
             />
           ))}
