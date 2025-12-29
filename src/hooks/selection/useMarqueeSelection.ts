@@ -1,4 +1,3 @@
-import type { BlockId } from "@/types";
 import { useEffect, useRef, useState } from "react";
 
 type Rect = {
@@ -12,7 +11,7 @@ type Rect = {
 
 export function useMarqueeSelection(
   containerRef: React.RefObject<HTMLElement | null>,
-  registryRef: React.RefObject<Map<BlockId, HTMLElement>>
+  registryRef: React.RefObject<Map<string, HTMLElement>>
 ) {
   const DRAG_THRESHOLD = 4;
 
@@ -26,7 +25,7 @@ export function useMarqueeSelection(
   });
 
   const [rect, setRect] = useState<Rect | null>(null);
-  const [selected, setSelected] = useState<Set<BlockId>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const cancelSelection = () => {
     drag.current.armed = false;
@@ -98,7 +97,7 @@ export function useMarqueeSelection(
     drag.current.active = false;
 
     const containerBounds = containerRef.current.getBoundingClientRect();
-    const next = new Set<BlockId>();
+    const next = new Set<string>();
 
     registryRef.current.forEach((el, id) => {
       const box = el.getBoundingClientRect();
@@ -109,7 +108,6 @@ export function useMarqueeSelection(
         bottom: box.bottom - containerBounds.top,
       };
 
-      // Check if marquee rect intersects with element bounds
       const intersects = !(
         rect.right < b.left ||
         rect.left > b.right ||
@@ -143,5 +141,6 @@ export function useMarqueeSelection(
     onMouseMove,
     onMouseUp,
     onMouseLeave,
+    setSelected,
   };
 }
