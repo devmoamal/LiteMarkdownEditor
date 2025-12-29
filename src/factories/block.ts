@@ -6,5 +6,6 @@ export function generateEmptyBlock(): TBlock {
     id: generateUUID(),
     type: "Text",
     content: "",
+    props: {},
   };
 }
