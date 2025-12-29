@@ -1,5 +1,5 @@
 <h1 style="display: flex; align-items: center; gap: 8px;">
-  <img src="./public/logo.svg" alt="Logo" width="24" />
+  <img src="./public/logo.png" alt="Logo" width="24" />
   Lite Markdown Editor
 </h1>
 
