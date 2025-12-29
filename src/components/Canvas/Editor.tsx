@@ -6,7 +6,7 @@ import Block from "./Block";
 import { useMarqueeSelection } from "@/hooks/selection/useMarqueeSelection";
 import { SelectionBox } from "@/components/Canvas/SelectionBox";
 import useEditor from "@/hooks/useEditor";
-import type { BlockId, TBlock } from "@/types";
+import type { TBlock, BlockId } from "@/types";
 import Title from "./Title";
 
 type EditorProps = {
@@ -17,17 +17,12 @@ function Editor({ className }: EditorProps) {
   const { blocks, deleteSelected, addEmptyToLast, setBlock } = useEditor();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const registryRef = useRef<Map<BlockId, HTMLElement>>(new Map());
+  const registryRef = useRef<Map<string, HTMLElement>>(new Map());
 
   const onChangeBlock = (block: TBlock) => {
     setBlock(block);
-
-    // Check if the last block not empty to create new block
-    if (block.content.length > 0 && blocks[blocks.length - 1].id == block.id)
-      addEmptyToLast();
   };
 
-  // Marquee selection hook: rect, selected ids, mouse handlers
   const { rect, selected, onMouseDown, onMouseMove, onMouseUp, onMouseLeave } =
     useMarqueeSelection(containerRef, registryRef);
 
@@ -36,8 +31,11 @@ function Editor({ className }: EditorProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (selected.size === 0) return;
       if (e.key === "Backspace" || e.key === "Delete") {
-        e.preventDefault();
-        deleteSelected(selected);
+        // Only delete if multiple are selected or if not focused on anything specific
+        if (selected.size > 1 || document.activeElement === document.body) {
+          e.preventDefault();
+          deleteSelected(selected as Set<BlockId>);
+        }
       }
     };
 
@@ -52,9 +50,9 @@ function Editor({ className }: EditorProps) {
 
   return (
     <div
-      ref={containerRef} // container ref for marquee
+      ref={containerRef}
       className={cn(
-        "relative flex flex-col flex-1 pt-[7.5%] pb-[2.5%] px-[10%] sm:px-[12.5%] lg:px-[15%] text-text bg-editor-background select-none overflow-x-hidden",
+        "relative flex flex-col flex-1 pb-20 px-4 sm:px-[15%] lg:px-[20%] text-text bg-editor-background select-none overflow-y-auto overflow-x-hidden",
         className
       )}
       onMouseDown={onMouseDown}
@@ -62,18 +60,22 @@ function Editor({ className }: EditorProps) {
       onMouseUp={onMouseUp}
       onMouseLeave={onMouseLeave}
     >
-      <Title />
-      <hr className="my-2 text-text-hint" />
-      {blocks.map((block) => (
-        <Block
-          key={block.id}
-          block={block}
-          onChange={onChangeBlock}
-          register={(id, el) => registryRef.current.set(id, el)} // register block for selection
-          isSelected={selected.has(block.id)}
-        />
-      ))}
-      {rect && <SelectionBox rect={rect} />} {/* render marquee rectangle */}
+      <div className="max-w-4xl mx-auto w-full pt-[10%]">
+        <Title />
+        <hr className="my-6 border-text-hint/20" />
+        <div className="flex flex-col gap-1">
+          {blocks.map((block) => (
+            <Block
+              key={block.id}
+              block={block}
+              onChange={onChangeBlock}
+              register={(id, el) => registryRef.current.set(id, el)}
+              isSelected={selected.has(block.id)}
+            />
+          ))}
+        </div>
+      </div>
+      {rect && <SelectionBox rect={rect} />}
     </div>
   );
 }
