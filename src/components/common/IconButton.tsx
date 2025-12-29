@@ -23,6 +23,7 @@ function IconButton({
         "cursor-pointer",
         "hover:bg-button-hover",
         "focus:outline-none",
+        "rounded",
         className
       )}
     >
