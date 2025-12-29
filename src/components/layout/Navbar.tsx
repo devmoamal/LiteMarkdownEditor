@@ -4,6 +4,8 @@ import { Ellipsis, Moon, Sun } from "lucide-react";
 import IconButton from "../common/IconButton";
 import useTheme from "@/hooks/useTheme";
 
+import logo from "@/../public/logo.png";
+
 type NavbarProps = {
   className?: string;
 };
@@ -12,6 +14,10 @@ function Navbar({ className }: NavbarProps) {
   const { title } = useEditor();
   const { theme, toggle } = useTheme();
 
+  // Open github page when click on logo ...
+  const onClickLogo = () =>
+    window.open("https://github.com/devmoamal/LiteMarkdownEditor");
+
   return (
     <div
       className={cn(
@@ -19,7 +25,16 @@ function Navbar({ className }: NavbarProps) {
         className
       )}
     >
-      <p className="text-text font-bold truncate w-2/3">{title}</p>
+      <div className="flex items-center gap-1 min-w-0 flex-1 max-w-[200px] md:max-w-[400px]">
+        <img
+          className="w-6 h-6 hover:opacity-60 cursor-pointer"
+          src={logo}
+          onClick={onClickLogo}
+        />
+        <p className="text-text font-bold truncate">
+          {title ? title : "Untitled"}
+        </p>
+      </div>
       <div className="flex items-center gap-2">
         <IconButton
           className="text-text"
